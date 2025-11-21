@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+
+        section {
+            display: flex;
+            justify-content: center;
+        }
+
+        .mainBox {
+            width: 90%;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        table,
+        tr,
+        th,
+        td {
+            border: 1px solid gray;
+            border-collapse: collapse;
+        }
+
+        td,
+        th {
+            padding: 10px;
+            font-size: 1.5rem;
+        }
+
+        .createForm,
+        .updateForm {
+            width: 90%;
+            text-align: center;
+        }
+
+        input {
+            width: 80%;
+            padding: 10px;
+            border-radius: 7px;
+            border: 1px solid gray;
+            font-size: 1.1rem;
+        }
+
+        .input-field {
+            margin: 5px 0px;
+        }
+
+        h5 {
+            font-size: 2rem;
+        }
+
+        .formBox {
+            display: flex;
+        }
+    </style>
+</head>
+
+<body>
+    <section>
+        <div class="mainBox">
+            <div class="formBox">
+                <div class="createForm">
+                    <h5>Create User Form</h5>
+                    <form id="create-user">
+                        <div class="input-field">
+                            <input type="text" name="fName" placeholder="Enter First Name">
+                        </div>
+                        <div class="input-field">
+                            <input type="text" name="lName" placeholder="Enter Last Name">
+                        </div>
+                        <div class="input-field">
+                            <input type="text" name="age" placeholder="Enter Age">
+                        </div>
+                        <div class="input-field">
+                            <input type="text" name="phone" placeholder="Enter Phone">
+                        </div>
+                        <div class="input-field">
+                            <input type="text" name="city" placeholder="Enter City">
+                        </div>
+                        <div class="input-field">
+                            <input type="submit">
+                        </div>
+                    </form>
+                </div>
+                <div class="updateForm">
+                    <h5>Update User Form</h5>
+                    <form id="update-user">
+                        <div class="input-field">
+                            <input type="text" name="fName" placeholder="Enter First Name">
+                        </div>
+                        <div class="input-field">
+                            <input type="text" name="lName" placeholder="Enter Last Name">
+                        </div>
+                        <div class="input-field">
+                            <input type="text" name="age" placeholder="Enter Age">
+                        </div>
+                        <div class="input-field">
+                            <input type="text" name="phone" placeholder="Enter Phone">
+                        </div>
+                        <div class="input-field">
+                            <input type="text" name="city" placeholder="Enter City">
+                        </div>
+                        <div class="input-field">
+                            <input type="submit">
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="tableBox">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Age</th>
+                            <th>Phone</th>
+                            <th>City</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+    <script>
+        let api = 'http://localhost:5000'
+        let tbody = document.querySelector('tbody')
+        let fetchData = async () => {
+            let data = await fetch(${api}/users)
+            let result = await data.json()
+
+            let allUsers = result.data
+            tbody.innerHTML = ''
+            allUsers.forEach((user, index) => {
+                let tr = document.createElement('tr')
+                let tdId = document.createElement('td')
+                tdId.innerText = index + 1
+
+                let tdFname = document.createElement('td')
+                tdFname.innerText = user.fName
+
+                let tdLname = document.createElement('td')
+                tdLname.innerText = user.lName
+
+                let tdAge = document.createElement('td')
+                tdAge.innerText = user.age
+
+                let tdPhone = document.createElement('td')
+                tdPhone.innerText = user.phone
+
+                let tdCity = document.createElement('td')
+                tdCity.innerText = user.city
+
+                let tdAction = document.createElement('td')
+                tdAction.innerHTML = `
+                    <button onclick="deleteUser('${user._id}')">
+                        <i class="fa-solid fa-trash"></i>    
+                    </button>
+                    <button onclick="editUser('${user._id}')">
+                        <i class="fa-solid fa-pencil"></i>    
+                    </button>
+                    `
+
+                tr.appendChild(tdId)
+                tr.appendChild(tdFname)
+                tr.appendChild(tdLname)
+                tr.appendChild(tdAge)
+                tr.appendChild(tdPhone)
+                tr.appendChild(tdCity)
+                tr.appendChild(tdAction)
+                tbody.appendChild(tr)
+            })
+        }
+        fetchData()
+
+        // Create User
+        let createUserForm = document.querySelector('#create-user')
+        createUserForm.addEventListener('submit', (e) => {
+            e.preventDefault()
+            let fName = document.getElementsByName('fName')[0].value
+            let lName = document.getElementsByName('lName')[0].value
+            let age = document.getElementsByName('age')[0].value
+            let city = document.getElementsByName('city')[0].value
+            let phone = document.getElementsByName('phone')[0].value
+
+            fetch(${api}/add-employee, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    fName: fName,
+                    lName: lName,
+                    age: age,
+                    phone: phone,
+                    city: city
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status) {
+                        alert("User Created ✅...")
+                        fetchData()
+                    }
+                })
+                .catch(err => console.error(err));
+        })
+
+        // Delete User
+
+        function deleteUser(id) {
+            let check = window.confirm('Are You sure to delete user')
+            if (check) {
+                fetch(${api}/users/${id}, {
+                    method: "DELETE"
+                })
+                    .then(res => res.json())
+                    .then(res => {
+                        if (res.status) {
+                            alert(res.message)
+                            fetchData()
+                        }
+                    })
+            }
+        }
+
+
+        // Edit User 
+        let userId;
+        function editUser(id) {
+            userId = id
+            fetch(${api}/users/${id})
+                .then(res => res.json())
+                .then(res => {
+                    let data = res.data
+                    document.getElementsByName('fName')[1].value = data.fName
+                    document.getElementsByName('lName')[1].value = data.lName
+                    document.getElementsByName('age')[1].value = data.age
+                    document.getElementsByName('city')[1].value = data.city
+                    document.getElementsByName('phone')[1].value = data.phone
+                })
+        }
+
+        // Update User
+        let updateUser = document.querySelector('#update-user')
+        updateUser.addEventListener('submit', (e) => {
+            e.preventDefault()
+            let fName = document.getElementsByName('fName')[1].value
+            let lName = document.getElementsByName('lName')[1].value
+            let age = document.getElementsByName('age')[1].value
+            let city = document.getElementsByName('city')[1].value
+            let phone = document.getElementsByName('phone')[1].value
+
+            fetch(${api}/users/${userId}, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    fName: fName,
+                    lName: lName,
+                    age: age,
+                    phone: phone,
+                    city: city
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status) {
+                        alert("User Updated ✅...")
+                        fetchData()
+                    }
+                })
+                .catch(err => console.error(err));
+        })
+    </script>
+</body>
+
+</html>
